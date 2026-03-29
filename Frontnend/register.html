@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Voting Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="config.js"></script>
+</head>
+
+<body class="auth-container" style="padding: 40px 0;">
+
+    <div class="auth-card card" style="max-width: 500px;">
+        <div class="auth-logo">
+            <div class="brand-icon" style="margin: 0 auto 16px;">
+                <i class="fa-solid fa-check-to-slot"></i>
+            </div>
+            <h2 style="font-size: 24px; font-weight: 700;">Create Account</h2>
+            <p style="color: var(--text-sub); font-size: 14px; margin-top: 4px;">Join the College Voting System</p>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="registerForm">
+            <div class="form-group">
+                <label>Select Role *</label>
+                <select id="role" class="form-control" onchange="toggleExtraFields()" required>
+                    <option value="">Choose your role</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                </select>
+            </div>
+
+            <div id="extraFields" style="display:none;">
+                <div class="form-group">
+                    <label>Department *</label>
+                    <select id="department" class="form-control">
+                        <option value="">Select Department</option>
+                        <option>Computer Science</option>
+                        <option>Information Technology</option>
+                        <option>Computer Science</option>
+                        <option>Commerce</option>
+                        <option>Engineering</option>
+                        <option>Arts</option>
+                        <option>Management</option>
+                        <option>Mass Communication</option>
+                    </select>
+                </div>
+
+                <div id="classDiv" class="form-group">
+                    <label>Class *</label>
+                    <select id="className" class="form-control">
+                        <option value="">Select Class</option>
+                        <option>First Year</option>
+                        <option>Second Year</option>
+                        <option>Third Year</option>
+                        <option>Final Year</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="fullname" class="form-control" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label>College ID *</label>
+                <input type="text" id="collegeId" class="form-control" placeholder="e.g., STU001" required>
+                <small style="color: var(--text-sub); font-size: 11px;">Unique enrollment number</small>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address *</label>
+                <input type="email" id="email" class="form-control" placeholder="you@college.edu" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password *</label>
+                <input type="password" id="password" class="form-control" placeholder="Min. 8 characters" required>
+            </div>
+
+            <div class="form-group">
+                <label>Confirm Password *</label>
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Re-enter password"
+                    required>
+            </div>
+
+            <div id="errorMsg" class="badge"
+                style="display: none; background: #fee2e2; color: #b91c1c; width: 100%; text-align: center; margin-bottom: 16px;">
+            </div>
+
+            <button type="submit" class="btn btn-dark" style="width: 100%;">Register</button>
+
+            <p style="text-align: center; font-size: 14px; margin-top: 24px; color: var(--text-sub);">
+                Already have an account? <a href="login.html"
+                    style="color: var(--primary-blue); font-weight: 600; text-decoration: none;">Login here</a>
+            </p>
+        </form>
+
+        <!-- OTP Verification Form (hidden initially) -->
+        <div id="otpSection" style="display:none; text-align: center;">
+            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">Verify Your Email</h3>
+            <p style="margin-bottom: 24px; font-size: 14px; color: var(--text-sub);">
+                Enter the 6-digit OTP sent to <br><strong id="otpEmail" style="color: var(--text-main);"></strong>
+            </p>
+
+            <div class="form-group">
+                <input type="text" id="otpInput" class="form-control" placeholder="000000" maxlength="6"
+                    style="letter-spacing: 12px; font-size: 24px; text-align: center; font-weight: 700;">
+            </div>
+
+            <div id="otpErrorMsg" class="badge"
+                style="display: none; background: #fee2e2; color: #b91c1c; width: 100%; text-align: center; margin-bottom: 16px;">
+            </div>
+
+            <button type="button" class="btn btn-primary" style="width: 100%; margin-bottom: 16px;"
+                onclick="verifyOtp()">Verify & Complete</button>
+
+            <button type="button" onclick="resendOtp()"
+                style="background:none; border:none; color: var(--primary-blue); cursor:pointer; font-size:14px; font-weight: 600;">
+                Resend OTP
+            </button>
+        </div>
+
+        <div style="text-align: center; margin-top: 32px;">
+            <a href="index.html" style="color: var(--text-sub); text-decoration: none; font-size: 13px;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById("registerForm");
+        const errorMsg = document.getElementById("errorMsg");
+        let registeredEmail = "";
+
+        function toggleExtraFields() {
+            const role = document.getElementById("role").value;
+            const extraFields = document.getElementById("extraFields");
+            const classDiv = document.getElementById("classDiv");
+
+            if (role === "student" || role === "teacher") {
+                extraFields.style.display = "block";
+                if (role === "teacher") {
+                    classDiv.style.display = "none";
+                } else {
+                    classDiv.style.display = "block";
+                }
+            } else {
+                extraFields.style.display = "none";
+            }
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const role = document.getElementById("role").value;
+            const fullname = document.getElementById("fullname").value.trim();
+            const collegeId = document.getElementById("collegeId").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const confirmPassword = document.getElementById("confirmPassword").value.trim();
+            const department = document.getElementById("department").value;
+            const className = document.getElementById("className").value;
+
+            if (password.length < 8) {
+                errorMsg.style.display = "block";
+                errorMsg.innerText = "Password must be at least 8 characters!";
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorMsg.style.display = "block";
+                errorMsg.innerText = "Passwords do not match!";
+                return;
+            }
+
+            try {
+                const payload = { role, fullname, collegeId, email, password };
+                if (role === 'student' || role === 'teacher') payload.department = department;
+                if (role === 'student') payload.className = className;
+
+                const response = await fetch(BASE_URL + "/api/users/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    errorMsg.style.display = "block";
+                    errorMsg.innerText = result.message || "Registration failed!";
+                    return;
+                }
+
+                errorMsg.style.display = "none";
+                registeredEmail = email;
+
+                document.getElementById("registerForm").style.display = "none";
+                document.getElementById("otpSection").style.display = "block";
+                document.getElementById("otpEmail").innerText = email;
+
+            } catch (err) {
+                errorMsg.style.display = "block";
+                errorMsg.innerText = "Server not reachable!";
+            }
+        });
+
+        async function verifyOtp() {
+            const otp = document.getElementById("otpInput").value.trim();
+            const otpError = document.getElementById("otpErrorMsg");
+
+            if (!otp || otp.length !== 6) {
+                otpError.style.display = "block";
+                otpError.innerText = "Enter a valid 6-digit OTP!";
+                return;
+            }
+
+            try {
+                const response = await fetch(BASE_URL + "/api/users/verify-otp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: registeredEmail, otp: otp })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    otpError.style.display = "block";
+                    otpError.innerText = result.message || "Verification failed!";
+                    return;
+                }
+
+                otpError.style.display = "none";
+                alert("Account verified! You can now login.");
+                window.location.href = "login.html";
+
+            } catch (err) {
+                otpError.style.display = "block";
+                otpError.innerText = "Server error!";
+            }
+        }
+
+        async function resendOtp() {
+            try {
+                const response = await fetch(BASE_URL + "/api/users/resend-otp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: registeredEmail })
+                });
+                const result = await response.json();
+                alert(result.message);
+            } catch (err) { alert("Failed to resend OTP."); }
+        }
+    </script>
+
+</body>
+
+</html>

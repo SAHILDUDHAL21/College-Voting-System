@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cast Your Vote | Voting Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="config.js"></script>
+    <style>
+        .submit-vote-btn {
+            background: #9ca3af;
+            cursor: not-allowed;
+            width: 100%;
+            margin-top: 32px;
+        }
+        .submit-vote-btn.active {
+            background: var(--primary-blue);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout-container">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+            <div class="brand-text">
+                <h2>Voting Portal</h2>
+                <p>Student Portal</p>
+            </div>
+        </div>
+        
+        <nav class="nav-links">
+            <a href="student_dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="student_profile.html" class="nav-item"><i class="fa-solid fa-user"></i> Profile</a>
+            <a href="vote.html" class="nav-item active"><i class="fa-solid fa-box-archive"></i> Vote Now</a>
+            <a href="result.html" class="nav-item"><i class="fa-solid fa-chart-simple"></i> View Results</a>
+        </nav>
+
+        <a href="#" onclick="localStorage.clear(); window.location.href='login.html';" class="nav-item logout-btn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Cast Your Vote</h1>
+            <p>Select your preferred candidate for the current election.</p>
+        </header>
+
+        <div id="noElectionMsg" style="display: none;" class="card">
+            <div style="text-align: center; padding: 40px;">
+                <div style="font-size: 48px; color: var(--text-sub); margin-bottom: 24px;"><i class="fa-solid fa-ban"></i></div>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">No Active Election</h3>
+                <p style="color: var(--text-sub);">There are no elections currently running that require your vote.</p>
+                <a href="student_dashboard.html" class="btn btn-dark" style="margin-top: 24px;">Back to Dashboard</a>
+            </div>
+        </div>
+
+        <div id="votingContent" style="display: none; display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+            <div>
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Select a Candidate</h3>
+                <div id="candidatesList">
+                    <!-- Dynamic Candidate Cards -->
+                </div>
+            </div>
+
+            <div class="card" style="height: fit-content;">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;" id="electionName">---</h3>
+                <div style="background: #fdf2f8; color: #db2777; font-size: 11px; font-weight: 700; display: inline-block; padding: 4px 10px; border-radius: 20px; margin-bottom: 16px;">
+                    <i class="fa-solid fa-clock"></i> ENDING SOON
+                </div>
+                <p id="electionDesc" style="font-size: 14px; color: var(--text-sub); line-height: 1.6; margin-bottom: 24px;">---</p>
+                
+                <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 13px; line-height: 1.5; color: var(--text-main); margin-bottom: 32px;">
+                    <i class="fa-solid fa-circle-info" style="color: var(--primary-blue);"></i> 
+                    Once you submit your vote, it is final and cannot be changed or edited later.
+                </div>
+
+                <button class="btn submit-vote-btn" id="submitBtn" disabled>Cast My Vote</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    checkAuth('student');
+
+    let activeElectionId = null;
+    const voterId = localStorage.getItem("userId");
+
+    async function loadVotingSession() {
+        try {
+            const elRes = await fetch(BASE_URL + "/api/elections");
+            const all = await elRes.json();
+            const active = all.filter(e => e.status === "Active");
+
+            if(active.length === 0) {
+                document.getElementById('noElectionMsg').style.display = 'block';
+                document.getElementById('votingContent').style.display = 'none';
+                return;
+            }
+
+            const election = active[0];
+            activeElectionId = election.id;
+
+            // PREVENT DOUBLE VOTING: Check backend if already voted
+            const checkRes = await fetch(`${BASE_URL}/api/votes/check/${activeElectionId}/${voterId}`);
+            const hasVoted = await checkRes.json();
+            
+            if (hasVoted) {
+                alert("You have already cast your vote in this election!");
+                window.location.href = "student_dashboard.html";
+                return;
+            }
+
+            document.getElementById('votingContent').style.display = 'grid';
+            document.getElementById('electionName').innerText = election.name;
+            document.getElementById('electionDesc').innerText = election.description || "Campus election for student representation.";
+
+            const canRes = await fetch(BASE_URL + "/api/candidates/election/" + activeElectionId);
+            const candidates = await canRes.json();
+            const list = document.getElementById('candidatesList');
+            list.innerHTML = "";
+
+            if(candidates.length === 0) {
+                list.innerHTML = "<p style='color: var(--text-sub);'>No candidates registered for this election.</p>";
+                return;
+            }
+
+            candidates.forEach(c => {
+                const img = c.profilePhoto ? c.profilePhoto : 'https://ui-avatars.com/api/?name='+c.name+'&background=random';
+                list.innerHTML += `
+                    <label class="candidate-card">
+                        <input type="radio" name="candidate" value="${c.id}" onchange="enableSubmit()">
+                        <img src="${img}" class="candidate-avatar" alt="pic">
+                        <div class="candidate-info">
+                            <h4>${c.name}</h4>
+                            <div class="candidate-tags">
+                                <span class="candidate-tag">${c.className || 'General'}</span>
+                                <span class="candidate-tag">${c.department}</span>
+                            </div>
+                            <p style="font-size: 13px; color: var(--text-sub); margin-top: 8px;">${c.description || 'Candidate for ' + election.name}</p>
+                        </div>
+                    </label>
+                `;
+            });
+        } catch(e) { console.error(e); }
+    }
+
+    function enableSubmit() {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = false;
+        btn.classList.add('active');
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+        const selected = document.querySelector('input[name="candidate"]:checked');
+        if(!selected) return;
+
+        if(!confirm("Are you sure you want to cast your vote for this candidate?")) return;
+
+        try {
+            const response = await fetch(BASE_URL + "/api/votes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    electionId: activeElectionId,
+                    candidateId: selected.value,
+                    voterId: voterId
+                })
+            });
+
+            if(response.ok) {
+                alert("Vote cast successfully!");
+                window.location.href = "student_dashboard.html";
+            } else {
+                const err = await response.json();
+                alert(err.message || "Failed to submit vote.");
+            }
+        } catch(e) { alert("Server error."); }
+    });
+
+    window.onload = loadVotingSession;
+</script>
+
+</body>
+</html>

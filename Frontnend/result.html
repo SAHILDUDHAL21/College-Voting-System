@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Results | Voting Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+    <style>
+        .leader-card {
+            background: #fff7ed;
+            border: 1px solid #ffedd5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+        }
+        .trophy-icon {
+            background: #f97316;
+            color: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .chart-box {
+            padding: 24px;
+            min-height: 300px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+            <div class="brand-text">
+                <h2>Voting Portal</h2>
+                <p id="sidebar-role-text">Portal</p>
+            </div>
+        </div>
+        
+        <nav class="nav-links" id="sidebar-nav">
+            <!-- Dynamic Nav based on role -->
+        </nav>
+
+        <a href="#" onclick="localStorage.clear(); window.location.href='login.html';" class="nav-item logout-btn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Election Results</h1>
+            <p>Real-time analytics and voting distribution</p>
+        </header>
+
+        <div id="noDataMsg" style="display: none;" class="card">
+            <div style="text-align: center; padding: 60px;">
+                <i class="fa-solid fa-chart-line" style="font-size: 48px; color: var(--text-sub); margin-bottom: 24px;"></i>
+                <h3 style="font-size: 20px; font-weight: 700;">No Results to Display</h3>
+                <p style="color: var(--text-sub); margin-top: 8px;">Check back once the election is concluded or votes are cast.</p>
+            </div>
+        </div>
+
+        <div id="resultsContent" style="display: none;">
+            <!-- Current Leader -->
+            <div class="leader-card">
+                <div style="display: flex; gap: 24px; align-items: center;">
+                    <div class="trophy-icon"><i class="fa-solid fa-trophy"></i></div>
+                    <div>
+                        <span style="font-size: 11px; font-weight: 700; color: #c2410c; text-transform: uppercase; letter-spacing: 1px;">Current Leader</span>
+                        <h2 id="leaderName" style="font-size: 28px; font-weight: 700; margin-top: 4px;">---</h2>
+                        <div style="display: flex; gap: 12px; margin-top: 8px; align-items: center;">
+                            <span class="badge badge-active" id="leaderDept" style="background: white; border: 1px solid #ffedd5; color: #c2410c;">Dept</span>
+                            <span id="leaderVotesText" style="font-size: 14px; font-weight: 600; color: #c2410c;">0 votes</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="leaderInitials" style="width: 64px; height: 64px; background: #ffedd5; border: 4px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #c2410c; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    -
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 32px;">
+                <div class="card chart-box">
+                    <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 24px;">Vote Distribution</h3>
+                    <canvas id="barChart"></canvas>
+                </div>
+                <div class="card chart-box">
+                    <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 24px;">Vote Share Percentage</h3>
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Table -->
+            <div class="card">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Detailed Results Table</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Candidate</th>
+                                <th>Department</th>
+                                <th>Votes</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const userRole = localStorage.getItem('userRole');
+    checkAuth(); // General auth check
+
+    // Render Sidebar based on role
+    const nav = document.getElementById('sidebar-nav');
+    document.getElementById('sidebar-role-text').innerText = userRole.charAt(0).toUpperCase() + userRole.slice(1) + " Portal";
+    
+    if (userRole === 'admin') {
+        nav.innerHTML = `
+            <a href="admin_dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="manage_election.html" class="nav-item"><i class="fa-solid fa-calendar-check"></i> Manage Elections</a>
+            <a href="view_voters.html" class="nav-item"><i class="fa-solid fa-users"></i> View Voters</a>
+            <a href="result.html" class="nav-item active"><i class="fa-solid fa-chart-simple"></i> Live Results</a>
+        `;
+    } else if (userRole === 'teacher') {
+        nav.innerHTML = `
+            <a href="teacher_dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="teacher_profile.html" class="nav-item"><i class="fa-solid fa-user"></i> Profile</a>
+            <a href="add_candidate.html" class="nav-item"><i class="fa-solid fa-user-plus"></i> Add Candidate</a>
+            <a href="result.html" class="nav-item active"><i class="fa-solid fa-chart-line"></i> View Results</a>
+        `;
+    } else {
+        nav.innerHTML = `
+            <a href="student_dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="student_profile.html" class="nav-item"><i class="fa-solid fa-user"></i> Profile</a>
+            <a href="vote.html" class="nav-item"><i class="fa-solid fa-box-archive"></i> Vote Now</a>
+            <a href="result.html" class="nav-item active"><i class="fa-solid fa-chart-simple"></i> View Results</a>
+        `;
+    }
+
+    async function loadResults() {
+        try {
+            const elRes = await fetch(BASE_URL + "/api/elections");
+            const all = await elRes.json();
+            const active = all.filter(e => e.status === "Active");
+
+            if(active.length === 0) {
+                document.getElementById('noDataMsg').style.display = 'block';
+                return;
+            }
+
+            const eId = active[0].id;
+            const resData = await fetch(BASE_URL + "/api/votes/results/" + eId);
+            const results = await resData.json();
+
+            if(results.length === 0) {
+                document.getElementById('noDataMsg').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('resultsContent').style.display = 'block';
+            results.sort((a,b) => b.voteCount - a.voteCount);
+
+            // Set Leader
+            const leader = results[0];
+            document.getElementById('leaderName').innerText = leader.candidateName;
+            document.getElementById('leaderDept').innerText = leader.className || leader.department;
+            document.getElementById('leaderVotesText').innerText = leader.voteCount + " votes (" + (leader.percentage || 0) + "%)";
+            document.getElementById('leaderInitials').innerText = leader.candidateName.substring(0,2).toUpperCase();
+
+            const tbody = document.getElementById('resultsTableBody');
+            tbody.innerHTML = "";
+            
+            const labels = [];
+            const dataVotes = [];
+            const dataPerc = [];
+            const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#22c55e', '#ef4444'];
+
+            results.forEach((r, idx) => {
+                labels.push(r.candidateName);
+                dataVotes.push(r.voteCount);
+                dataPerc.push(r.percentage);
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--text-sub);">#${idx+1}</td>
+                        <td style="font-weight: 600;">${r.candidateName}</td>
+                        <td><span class="candidate-tag">${r.className || r.department}</span></td>
+                        <td style="font-weight: 700;">${r.voteCount}</td>
+                        <td style="font-weight: 600; color: var(--primary-blue);">${r.percentage}%</td>
+                    </tr>
+                `;
+            });
+
+            // Initialize Charts
+            new Chart(document.getElementById('barChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Votes',
+                        data: dataVotes,
+                        backgroundColor: colors,
+                        borderRadius: 8
+                    }]
+                },
+                options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+
+            new Chart(document.getElementById('pieChart'), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataPerc,
+                        backgroundColor: colors,
+                        borderWidth: 0
+                    }]
+                },
+                options: { plugins: { legend: { position: 'bottom' } } }
+            });
+
+        } catch(e) { console.error(e); }
+    }
+
+    window.onload = loadResults;
+</script>
+
+</body>
+</html>

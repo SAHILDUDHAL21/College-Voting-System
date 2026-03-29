@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Voting Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="config.js"></script>
+    <style>
+        .profile-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-icon {
+            color: #64748b;
+            width: 20px;
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 14px;
+            font-weight: 600;
+            width: 140px;
+            color: #1e293b;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #64748b;
+            flex: 1;
+        }
+
+        .read-only-msg {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 16px;
+            font-style: italic;
+        }
+
+        .password-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .edit-mode {
+            display: none;
+        }
+
+        .view-mode {
+            display: block;
+        }
+
+        .profile-img-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #f8fafc;
+        }
+
+        .profile-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="layout-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+                <div class="brand-text">
+                    <h2>Voting Portal</h2>
+                    <p>Teacher Portal</p>
+                </div>
+            </div>
+
+            <nav class="nav-links">
+                <a href="teacher_dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a href="teacher_profile.html" class="nav-item active"><i class="fa-solid fa-user"></i> Profile</a>
+                <a href="add_candidate.html" class="nav-item"><i class="fa-solid fa-user-plus"></i> Add Candidate</a>
+                <a href="result.html" class="nav-item"><i class="fa-solid fa-chart-simple"></i> View Results</a>
+            </nav>
+
+            <a href="#" onclick="localStorage.clear(); window.location.href='login.html';"
+                class="nav-item logout-btn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+        </aside>
+
+        <main class="main-content">
+            <header class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1>My Profile</h1>
+                    <p>View and manage your profile information</p>
+                </div>
+                <button id="toggleEditBtn" class="btn btn-white" style="border: 1px solid var(--border);"><i
+                        class="fa-solid fa-pen"></i> Edit Profile</button>
+            </header>
+
+            <div class="profile-container">
+                <!-- Left Card: Identity -->
+                <div class="card" style="text-align: center; padding: 40px 24px;">
+                    <div class="profile-img-container">
+                        <img id="side-img" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile">
+                    </div>
+                    <h2 id="side-name" style="font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">
+                        ---</h2>
+                    <p id="side-dept" style="color: #64748b; font-size: 14px; margin-bottom: 32px;">Department Name</p>
+
+                    <div style="text-align: left; font-size: 13px;">
+                        <div
+                            style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+                            <span style="color: #94a3b8;">College ID</span>
+                            <span id="side-id" style="font-weight: 600; color: #1e293b;">---</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                            <span style="color: #94a3b8;">Role</span>
+                            <span style="font-weight: 600; color: #1e293b;">Faculty/Teacher</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Card: Personal Info -->
+                <div class="card" style="padding: 32px;">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Personal Information</h3>
+
+                    <div id="viewSection" class="view-mode">
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-regular fa-user"></i></div>
+                            <div class="info-label">Full Name</div>
+                            <div class="info-value" id="disp-fullname">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-regular fa-envelope"></i></div>
+                            <div class="info-label">Email</div>
+                            <div class="info-value" id="disp-email">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-hashtag"></i></div>
+                            <div class="info-label">College ID</div>
+                            <div class="info-value" id="disp-id">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-regular fa-bookmark"></i></div>
+                            <div class="info-label">Department</div>
+                            <div class="info-value" id="disp-department">---</div>
+                        </div>
+                        <!-- <p class="read-only-msg">Profile information is read-only. Click "Edit Profile" to modify your details.</p> -->
+                    </div>
+
+                    <div id="editSection" class="edit-mode">
+                        <form id="profileForm">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="editFullname" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>College ID</label>
+                                <input type="text" id="editCollegeId" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Department</label>
+                                <select id="editDepartment" class="form-control" required>
+                                    <option>Computer Science</option>
+                                    <option>Business</option>
+                                    <option>Engineering</option>
+                                    <option>Arts</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                                <button type="submit" class="btn btn-dark">Save Changes</button>
+                                <button type="button" onclick="toggleEdit(false)" class="btn btn-white"
+                                    style="border: 1px solid var(--border);">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Card: Password -->
+            <div class="card" style="padding: 32px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Security Settings</h3>
+                        <p style="color: #64748b; font-size: 13px;">Manage your account password and security
+                            preferences</p>
+                    </div>
+                    <button id="showPasswordFormBtn" class="btn btn-white" style="border: 1px solid var(--border);"><i
+                            class="fa-solid fa-lock"></i> Change Password</button>
+                </div>
+
+                <div id="passwordFormWrapper"
+                    style="display: none; margin-top: 32px; padding-top: 24px; border-top: 1px solid #f1f5f9;">
+                    <form id="passwordForm">
+                        <div
+                            style="background: #eff6ff; padding: 20px; border-radius: 12px; margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                            <div style="flex: 1;">
+                                <h4 style="font-size: 14px; font-weight: 700; color: #1e40af; margin-bottom: 4px;">
+                                    Account Verification</h4>
+                                <p style="font-size: 12px; color: #3b82f6;">An OTP is required to prove your identity
+                                    before changing your password.</p>
+                            </div>
+                            <button type="button" id="btnRequestOtp" class="btn btn-dark"
+                                style="background: #1e40af; border: none; font-size: 12px; height: 40px; white-space: nowrap;">Send
+                                Verification OTP</button>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+                            <div class="form-group">
+                                <label>Verification OTP</label>
+                                <input type="text" id="passOtp" class="form-control" placeholder="6-digit code">
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" id="newPassword" class="form-control"
+                                    placeholder="At least 6 characters">
+                            </div>
+                            <div class="form-group">
+                                <label>Re-enter Password</label>
+                                <input type="password" id="confirmPassword" class="form-control"
+                                    placeholder="Match new password">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; margin-top: 32px;">
+                            <button type="submit" class="btn btn-dark">Update Password</button>
+                            <button type="button" onclick="hidePasswordForm()" class="btn btn-white"
+                                style="border: 1px solid var(--border);">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        checkAuth('teacher');
+        const userId = localStorage.getItem('userId');
+        let isEditMode = false;
+        let currentUser = null;
+
+        async function loadProfile() {
+            try {
+                const res = await fetch(BASE_URL + "/api/users/voters");
+                const voters = await res.json();
+                currentUser = voters.find(v => v.id === userId);
+
+                if (currentUser) {
+                    // View Mode
+                    document.getElementById('disp-fullname').innerText = currentUser.fullname;
+                    document.getElementById('disp-email').innerText = currentUser.email;
+                    document.getElementById('disp-id').innerText = currentUser.collegeId;
+                    document.getElementById('disp-department').innerText = currentUser.department;
+
+                    // Sidebar/Identity
+                    document.getElementById('side-name').innerText = currentUser.fullname;
+                    document.getElementById('side-dept').innerText = currentUser.department;
+                    document.getElementById('side-id').innerText = currentUser.collegeId;
+                    document.getElementById('side-img').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullname)}&background=random&size=128`;
+
+                    // Prefill Edit Form
+                    document.getElementById('editFullname').value = currentUser.fullname;
+                    document.getElementById('editCollegeId').value = currentUser.collegeId;
+                    document.getElementById('editDepartment').value = currentUser.department;
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function toggleEdit(val) {
+            isEditMode = val;
+            document.getElementById('viewSection').style.display = isEditMode ? 'none' : 'block';
+            document.getElementById('editSection').style.display = isEditMode ? 'block' : 'none';
+            document.getElementById('toggleEditBtn').style.display = isEditMode ? 'none' : 'block';
+        }
+
+        document.getElementById('toggleEditBtn').addEventListener('click', () => toggleEdit(true));
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                fullname: document.getElementById('editFullname').value.trim(),
+                collegeId: document.getElementById('editCollegeId').value.trim(),
+                department: document.getElementById('editDepartment').value
+            };
+
+            try {
+                const res = await fetch(BASE_URL + "/api/users/" + userId, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    const updated = await res.json();
+                    localStorage.setItem('userFullName', updated.fullname);
+                    alert("Profile updated successfully!");
+                    location.reload();
+                }
+            } catch (e) { alert("Error updating profile."); }
+        });
+
+        function hidePasswordForm() {
+            document.getElementById('passwordFormWrapper').style.display = 'none';
+            document.getElementById('showPasswordFormBtn').style.display = 'block';
+            document.getElementById('passwordForm').reset();
+        }
+
+        document.getElementById('showPasswordFormBtn').addEventListener('click', function () {
+            this.style.display = 'none';
+            document.getElementById('passwordFormWrapper').style.display = 'block';
+        });
+
+        document.getElementById('btnRequestOtp').addEventListener('click', async () => {
+            try {
+                const res = await fetch(BASE_URL + "/api/users/password-otp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: currentUser.email })
+                });
+                if (res.ok) alert("A verification OTP has been sent to your registered email!");
+                else alert("Failed to send OTP. Please try again.");
+            } catch (e) { alert("Server error. Please check your connection."); }
+        });
+
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPw = document.getElementById('newPassword').value.trim();
+            const confPw = document.getElementById('confirmPassword').value.trim();
+            const otp = document.getElementById('passOtp').value.trim();
+
+            if (!otp) { alert("Please enter the 6-digit OTP sent to your email."); return; }
+            if (!newPw || newPw.length < 6) { alert("New password must be at least 6 characters long."); return; }
+            if (newPw !== confPw) { alert("Passwords do not match!"); return; }
+
+            try {
+                const res = await fetch(BASE_URL + "/api/users/" + userId, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ password: newPw, otp: otp, email: currentUser.email })
+                });
+                if (res.ok) {
+                    alert("Your password has been updated successfully!");
+                    location.reload();
+                } else {
+                    const err = await res.json();
+                    alert(err.message || "Update failed. Please check your OTP.");
+                }
+            } catch (e) { alert("Error connecting to server."); }
+        });
+
+        window.onload = loadProfile;
+    </script>
+
+</body>
+
+</html>

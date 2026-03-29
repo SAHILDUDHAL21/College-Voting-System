@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Voting Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="config.js"></script>
+</head>
+<body>
+
+<div class="layout-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+            <div class="brand-text">
+                <h2>Voting Portal</h2>
+                <p>Administrative Panel</p>
+            </div>
+        </div>
+        
+        <nav class="nav-links">
+            <a href="admin_dashboard.html" class="nav-item active"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="manage_election.html" class="nav-item"><i class="fa-solid fa-calendar-check"></i> Manage Elections</a>
+            <a href="view_voters.html" class="nav-item"><i class="fa-solid fa-users"></i> View Voters</a>
+            <a href="result.html" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Live Results</a>
+            <a href="#" onclick="promptAddAdmin()" class="nav-item"><i class="fa-solid fa-user-shield"></i> Add New Admin</a>
+        </nav>
+
+        <a href="#" onclick="handleLogout()" class="nav-item logout-btn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="page-header">
+            <h1 id="welcomeText">Welcome, Admin!</h1>
+            <p>Monitor and manage the campus election system</p>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid-stats">
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Total Students</span>
+                    <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-user-graduate"></i></div>
+                </div>
+                <div class="stat-val" id="count-students">0</div>
+                <div class="stat-desc">Registered student voters</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Total Teachers</span>
+                    <div class="stat-icon" style="background: #fdf2f8; color: #ec4899;"><i class="fa-solid fa-chalkboard-user"></i></div>
+                </div>
+                <div class="stat-val" id="count-teachers">0</div>
+                <div class="stat-desc">Faculty members</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Active Elections</span>
+                    <div class="stat-icon" style="background: #f0fdf4; color: #22c55e;"><i class="fa-solid fa-box-archive"></i></div>
+                </div>
+                <div class="stat-val" id="count-elections">0</div>
+                <div class="stat-desc">Elections currently running</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Total Votes</span>
+                    <div class="stat-icon" style="background: #fff7ed; color: #f97316;"><i class="fa-solid fa-vote-yea"></i></div>
+                </div>
+                <div class="stat-val" id="count-votes">N/A</div>
+                <div class="stat-desc">Votes cast across all polls</div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h3 style="font-size: 18px; font-weight: 700;">Active Elections</h3>
+                    <a href="manage_election.html" style="font-size: 13px; color: var(--primary-blue); text-decoration: none; font-weight: 600;">View All</a>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Election Name</th>
+                                <th>Timeline</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activeElectionsBody">
+                            <!-- Dynamic items -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Quick Actions</h3>
+                <div style="display: grid; gap: 16px;">
+                    <a href="manage_election.html" class="btn btn-dark" style="width: 100%; justify-content: flex-start;">
+                        <i class="fa-solid fa-plus"></i> Create New Election
+                    </a>
+                    <a href="view_voters.html" class="btn btn-white" style="width: 100%; justify-content: flex-start; border: 1px solid var(--border);">
+                        <i class="fa-solid fa-user-plus"></i> Audit Student List
+                    </a>
+                    <button onclick="promptAddAdmin()" class="btn btn-white" style="width: 100%; justify-content: flex-start; border: 1px solid var(--border);">
+                        <i class="fa-solid fa-shield-halved"></i> Add Admin Security
+                    </button>
+                </div>
+
+                <div style="margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border);">
+                    <h4 style="font-size: 14px; font-weight: 700; color: var(--text-sub); margin-bottom: 16px;">System Health</h4>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                            <span>Database Connection</span>
+                            <span class="badge badge-active">Connected</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                            <span>Email Service</span>
+                            <span class="badge badge-active">Operational</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    checkAuth('admin');
+
+    const userName = localStorage.getItem("userFullName") || "Admin";
+    document.getElementById("welcomeText").innerText = "Welcome back, " + userName + "!";
+
+    async function loadStats() {
+        try {
+            const rsUsers = await fetch(BASE_URL + "/api/users/voters");
+            const users = await rsUsers.json();
+            
+            document.getElementById('count-students').innerText = users.filter(u => u.role === 'student').length;
+            document.getElementById('count-teachers').innerText = users.filter(u => u.role === 'teacher').length;
+
+            const rsElections = await fetch(BASE_URL + "/api/elections");
+            const elections = await rsElections.json();
+            const activeElections = elections.filter(e => e.status === 'Active');
+            
+            document.getElementById('count-elections').innerText = activeElections.length;
+            
+            const rsTotalVotes = await fetch(BASE_URL + "/api/votes/total");
+            const totalVotes = await rsTotalVotes.json();
+            document.getElementById('count-votes').innerText = totalVotes;
+
+            const tbody = document.getElementById('activeElectionsBody');
+            tbody.innerHTML = "";
+            
+            if(activeElections.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; padding: 40px; color: var(--text-sub);'>No active elections found</td></tr>";
+            } else {
+                activeElections.forEach(e => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 600;">${e.name}</td>
+                            <td><span style="font-size:12px; color: var(--text-sub);">${e.startDate} - ${e.endDate}</span></td>
+                            <td><span class="badge badge-active">${e.status}</span></td>
+                            <td><a href="manage_election.html" style="color: var(--primary-blue); font-size: 12px; font-weight: 600; text-decoration: none;">Manage</a></td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function handleLogout() {
+        if(confirm("Are you sure you want to logout?")) {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+    }
+
+    async function promptAddAdmin() {
+        const email = prompt("Admin Email:");
+        if (!email) return;
+        const fullname = prompt("Admin Name:");
+        if (!fullname) return;
+        const collegeId = prompt("Admin College ID:");
+        if (!collegeId) return;
+        const password = prompt("Admin Password:");
+        if (!password) return;
+
+        try {
+            await fetch(BASE_URL + "/api/users/add-admin", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ fullname, email, collegeId, password })
+            });
+            alert("Admin added successfully!");
+        } catch(e) { alert("Failed to add admin."); }
+    }
+
+    window.onload = loadStats;
+</script>
+
+</body>
+</html>

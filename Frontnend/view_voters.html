@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Voters | Voting Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="config.js"></script>
+</head>
+<body>
+
+<div class="layout-container">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+            <div class="brand-text">
+                <h2>Voting Portal</h2>
+                <p>Admin Portal</p>
+            </div>
+        </div>
+        
+        <nav class="nav-links">
+            <a href="admin_dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="manage_election.html" class="nav-item"><i class="fa-solid fa-calendar-check"></i> Manage Elections</a>
+            <a href="view_voters.html" class="nav-item active"><i class="fa-solid fa-users"></i> View Voters</a>
+            <a href="result.html" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Live Results</a>
+        </nav>
+
+        <a href="#" onclick="localStorage.clear(); window.location.href='login.html';" class="nav-item logout-btn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Audit Voters</h1>
+            <p>Monitor student and teacher participation across the system</p>
+        </header>
+
+        <!-- Search and Export -->
+        <div class="card" style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="position: relative; width: 400px;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 12px; color: var(--text-sub);"></i>
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by name, ID or email..." style="padding-left: 40px; margin: 0;">
+            </div>
+            <button class="btn btn-white" style="border: 1px solid var(--border);" onclick="exportTable()">
+                <i class="fa-solid fa-file-export"></i> Export List (Excel)
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>College ID</th>
+                            <th>Role</th>
+                            <th>Dept / Class</th>
+                            <th>Email Address</th>
+                        </tr>
+                    </thead>
+                    <tbody id="voterTable">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    checkAuth('admin');
+
+    let allUsers = [];
+
+    async function loadUsers() {
+        try {
+            const rs = await fetch(BASE_URL + "/api/users/voters");
+            allUsers = await rs.json();
+            renderUsers(allUsers);
+        } catch(e) { console.error(e); }
+    }
+
+    function renderUsers(users) {
+        const tbody = document.getElementById('voterTable');
+        tbody.innerHTML = "";
+        
+        users.forEach(u => {
+            const initials = u.fullname.substring(0, 2).toUpperCase();
+            const deptClass = u.role === 'student' ? `${u.department} (${u.className})` : u.department || 'N/A';
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--primary-blue);">
+                                ${initials}
+                            </div>
+                            <span style="font-weight: 600;">${u.fullname}</span>
+                        </div>
+                    </td>
+                    <td style="font-family: monospace; font-size: 13px;">${u.collegeId}</td>
+                    <td><span class="badge" style="background: #eff6ff; color: #2563eb; text-transform: capitalize;">${u.role}</span></td>
+                    <td style="font-size: 13px; color: var(--text-sub);">${deptClass}</td>
+                    <td style="font-size: 13px; color: var(--text-sub);">${u.email}</td>
+                </tr>
+            `;
+        });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase();
+        const filtered = allUsers.filter(u => 
+            u.fullname.toLowerCase().includes(query) || 
+            u.collegeId.toLowerCase().includes(query) ||
+            u.email.toLowerCase().includes(query)
+        );
+        renderUsers(filtered);
+    });
+
+    function exportTable() {
+        if(allUsers.length === 0) return;
+        
+        let header = "Name,College ID,Role,Department,Email\n";
+        let rows = allUsers.map(u => `"${u.fullname}","${u.collegeId}","${u.role}","${u.department}","${u.email}"`).join("\n");
+        let csvContent = "data:text/csv;charset=utf-8," + header + rows;
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Voters_List.csv");
+        document.body.appendChild(link);
+        link.click();
+    }
+
+    window.onload = loadUsers;
+</script>
+
+</body>
+</html>

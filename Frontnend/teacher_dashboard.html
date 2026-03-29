@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard | Voting Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="config.js"></script>
+    <style>
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        .stat-detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .stat-detail-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .stat-detail-val {
+            font-size: 14px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout-container">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+            <div class="brand-text">
+                <h2>Voting Portal</h2>
+                <p>Teacher Portal</p>
+            </div>
+        </div>
+        
+        <nav class="nav-links">
+            <a href="teacher_dashboard.html" class="nav-item active"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="teacher_profile.html" class="nav-item"><i class="fa-solid fa-user"></i> Profile</a>
+            <a href="add_candidate.html" class="nav-item"><i class="fa-solid fa-user-plus"></i> Add Candidate</a>
+            <a href="result.html" class="nav-item"><i class="fa-solid fa-chart-line"></i> View Results</a>
+        </nav>
+
+        <a href="#" onclick="localStorage.clear(); window.location.href='login.html';" class="nav-item logout-btn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1 id="welcomeText">Welcome, teacher!</h1>
+            <p>Election monitoring and analytics dashboard</p>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid-stats">
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Total Students</span>
+                    <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-user-group"></i></div>
+                </div>
+                <div class="stat-val" id="totalStudents">0</div>
+                <div class="stat-desc">Eligible voters</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Votes Cast</span>
+                    <div class="stat-icon" style="background: #f0fdf4; color: #22c55e;"><i class="fa-solid fa-square-check"></i></div>
+                </div>
+                <div class="stat-val" id="totalVotes">0</div>
+                <div class="stat-desc">Total submissions</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Participation Rate</span>
+                    <div class="stat-icon" style="background: #f5f3ff; color: #8b5cf6;"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                </div>
+                <div class="stat-val" id="partRate">0%</div>
+                <div class="stat-desc">Student engagement</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Active Elections</span>
+                    <div class="stat-icon" style="background: #fff7ed; color: #f97316;"><i class="fa-solid fa-box-archive"></i></div>
+                </div>
+                <div class="stat-val" id="activeElections">0</div>
+                <div class="stat-desc">Currently running</div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+            <div class="card">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Active Elections</h3>
+                <div id="noElectionMsg" style="display: none; padding: 40px; text-align: center; color: var(--text-sub);">
+                    No active elections found.
+                </div>
+                <div id="electionContainer">
+                    <!-- Election Cards -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Participation Statistics</h3>
+                
+                <div class="stat-detail-item">
+                    <span class="stat-detail-label">Voted</span>
+                    <span class="stat-detail-val" id="valVoted">0 students</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="fillVoted" style="width: 0%; background: #22c55e;"></div>
+                </div>
+
+                <div class="stat-detail-item" style="margin-top: 24px;">
+                    <span class="stat-detail-label">Pending</span>
+                    <span class="stat-detail-val" id="valPending">0 students</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="fillPending" style="width: 0%; background: #f97316;"></div>
+                </div>
+
+                <div style="margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--border);">
+                    <h4 style="font-size: 14px; font-weight: 700; color: var(--text-sub); margin-bottom: 16px;">Class-wise Breakdown</h4>
+                    <div id="classBreakdown">
+                        <div class="stat-detail-item" style="margin-bottom: 8px;">
+                            <span style="font-size: 13px;">Computer Science</span>
+                            <span style="font-size: 13px; font-weight: 600;">78.5%</span>
+                        </div>
+                        <div class="stat-detail-item" style="margin-bottom: 8px;">
+                            <span style="font-size: 13px;">Engineering</span>
+                            <span style="font-size: 13px; font-weight: 600;">62.0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    checkAuth('teacher');
+
+    const userName = localStorage.getItem("userFullName") || "Teacher";
+    document.getElementById("welcomeText").innerText = "Welcome, " + userName;
+
+    async function loadData() {
+        try {
+            const rsUsers = await fetch(BASE_URL + "/api/users/voters");
+            const users = await rsUsers.json();
+            const students = users.filter(u => u.role === 'student');
+            
+            document.getElementById('totalStudents').innerText = students.length;
+
+            const rsElections = await fetch(BASE_URL + "/api/elections");
+            const elections = await rsElections.json();
+            const activeElections = elections.filter(e => e.status === 'Active');
+            
+            document.getElementById('activeElections').innerText = activeElections.length;
+
+            const container = document.getElementById('electionContainer');
+            if(activeElections.length === 0) {
+                document.getElementById('noElectionMsg').style.display = 'block';
+            } else {
+                activeElections.forEach(e => {
+                    const card = document.createElement('div');
+                    card.style.border = '1px solid var(--border)';
+                    card.style.borderRadius = '12px';
+                    card.style.padding = '20px';
+                    card.style.marginBottom = '16px';
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">${e.name}</h4>
+                                <p style="font-size: 12px; color: var(--text-sub);">Start: ${e.startDate} &nbsp; End: ${e.endDate}</p>
+                            </div>
+                            <span class="badge badge-active">${e.status}</span>
+                        </div>
+                        <div style="margin-top: 16px;">
+                            <p style="font-size: 13px; line-height: 1.6;">${e.description || 'No description provided.'}</p>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+                
+                // Fetch votes for the first active election (mocking stats for now as calculating all needs backend logic)
+                const mainElectionId = activeElections[0].id;
+                try {
+                    const rsVotes = await fetch(BASE_URL + "/api/votes/results/" + mainElectionId);
+                    const results = await rsVotes.json();
+                    let totalVotes = 0;
+                    results.forEach(r => totalVotes += r.voteCount);
+
+                    document.getElementById('totalVotes').innerText = totalVotes;
+                    const rate = students.length > 0 ? (totalVotes / students.length * 100).toFixed(1) : 0;
+                    document.getElementById('partRate').innerText = rate + "%";
+
+                    document.getElementById('valVoted').innerText = totalVotes + " students";
+                    document.getElementById('fillVoted').style.width = rate + "%";
+                    
+                    const pending = students.length - totalVotes;
+                    document.getElementById('valPending').innerText = pending + " students";
+                    document.getElementById('fillPending').style.width = (100 - rate) + "%";
+
+                } catch(e) { console.warn("Failed to load vote stats", e); }
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    window.onload = loadData;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Voting System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="config.js"></script>
+</head>
+<body style="background-color: var(--bg-main); color: var(--text-main);">
+
+<header style="background: white; border-bottom: 1px solid var(--border); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 40px; height: 40px; background: var(--primary-blue); color: white; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 20px;">
+            <i class="fa-solid fa-check-to-slot"></i>
+        </div>
+        <div>
+            <h2 style="font-size: 18px; font-weight: 700; margin: 0;">Voting Portal</h2>
+            <p style="font-size: 12px; color: var(--text-sub); margin: 0;">Democracy Made Digital</p>
+        </div>
+    </div>
+    <div style="display: flex; gap: 16px;">
+        <button class="btn btn-white" style="border: 1px solid var(--border);" onclick="window.location.href='login.html'">Login</button>
+        <button class="btn btn-primary" onclick="window.location.href='register.html'">Register Now</button>
+    </div>
+</header>
+
+<main style="max-width: 1200px; margin: 0 auto; padding: 60px 20px;">
+    
+    <section style="text-align: center; max-width: 800px; margin: 0 auto 80px;">
+        <h1 style="font-size: 48px; font-weight: 800; letter-spacing: -1px; line-height: 1.2; margin-bottom: 24px;">Your Voice. Your Choice. <br><span style="color: var(--primary-blue);">Secure Online Elections.</span></h1>
+        <p style="font-size: 18px; color: var(--text-sub); line-height: 1.6; margin-bottom: 40px;">
+            A modern, transparent, and user-friendly platform designed for organizing and participating in campus elections. Cast your vote from anywhere.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 16px;">
+            <button class="btn btn-primary" style="padding: 16px 32px; font-size: 16px;" onclick="window.location.href='register.html'">Get Started <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></button>
+            <button class="btn btn-white" style="padding: 16px 32px; font-size: 16px; border: 1px solid var(--border);" onclick="window.location.href='login.html'">Login to Portal</button>
+        </div>
+    </section>
+
+    <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; margin-bottom: 80px;">
+        <div class="card" style="text-align: center; padding: 40px 24px;">
+            <div style="width: 64px; height: 64px; background: #eff6ff; color: #3b82f6; font-size: 28px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">Secure Voting</h3>
+            <p style="color: var(--text-sub); font-size: 14px; line-height: 1.6;">End-to-end security ensures your vote remains completely private and untampered.</p>
+        </div>
+
+        <div class="card" style="text-align: center; padding: 40px 24px;">
+            <div style="width: 64px; height: 64px; background: #f0fdf4; color: #22c55e; font-size: 28px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                <i class="fa-solid fa-mobile-screen"></i>
+            </div>
+            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">Easy Access</h3>
+            <p style="color: var(--text-sub); font-size: 14px; line-height: 1.6;">Vote seamlessly from any device — your phone, tablet, or desktop computer.</p>
+        </div>
+
+        <div class="card" style="text-align: center; padding: 40px 24px;">
+            <div style="width: 64px; height: 64px; background: #f5f3ff; color: #8b5cf6; font-size: 28px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">Live Results</h3>
+            <p style="color: var(--text-sub); font-size: 14px; line-height: 1.6;">Watch election outcomes unfold with real-time interactive charts and live analytics.</p>
+        </div>
+    </section>
+    
+</main>
+
+<footer style="background: white; border-top: 1px solid var(--border); padding: 40px 20px; text-align: center;">
+    <p style="color: var(--text-sub); font-size: 14px;">&copy; 2026 College Voting System. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

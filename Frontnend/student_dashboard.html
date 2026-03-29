@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | Voting Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="config.js"></script>
+</head>
+<body>
+
+<div class="layout-container">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+            <div class="brand-text">
+                <h2>Voting Portal</h2>
+                <p>Student Portal</p>
+            </div>
+        </div>
+        
+        <nav class="nav-links">
+            <a href="student_dashboard.html" class="nav-item active"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="student_profile.html" class="nav-item"><i class="fa-solid fa-user"></i> Profile</a>
+            <a href="vote.html" class="nav-item"><i class="fa-solid fa-box-archive"></i> Vote Now</a>
+            <a href="result.html" class="nav-item"><i class="fa-solid fa-chart-simple"></i> View Results</a>
+        </nav>
+
+        <a href="#" onclick="localStorage.clear(); window.location.href='login.html';" class="nav-item logout-btn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1 id="welcomeText">Welcome back!</h1>
+            <p>Your campus voting dashboard</p>
+        </header>
+
+        <!-- CTA Banner -->
+        <div class="hero-banner" id="voteBanner" style="display: none;">
+            <div>
+                <h2>You Haven't Voted Yet</h2>
+                <p>Cast your vote now to make your voice heard in the campus elections.</p>
+            </div>
+            <a href="vote.html" class="btn btn-white">Vote Now</a>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid-stats">
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Active Elections</span>
+                    <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-calendar-days"></i></div>
+                </div>
+                <div class="stat-val" id="activeElectionsCount">0</div>
+                <div class="stat-desc">Currently running</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Voting Status</span>
+                    <div class="stat-icon" style="background: #f0fdf4; color: #22c55e;"><i class="fa-solid fa-square-check"></i></div>
+                </div>
+                <div class="stat-val" style="font-size: 24px; margin-top: 10px;" id="votingStatusText">Pending</div>
+                <div class="stat-desc">Your participation</div>
+            </div>
+
+            <div class="card stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Results Available</span>
+                    <div class="stat-icon" style="background: #f5f3ff; color: #8b5cf6;"><i class="fa-solid fa-chart-pie"></i></div>
+                </div>
+                <div class="stat-val" id="resultsCount">0</div>
+                <div class="stat-desc">Elections concluded</div>
+            </div>
+        </div>
+
+        <!-- Elections Table -->
+        <div class="card">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Active Elections</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Election Name</th>
+                            <th>Timeline</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="electionListBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    checkAuth('student');
+
+    const userName = localStorage.getItem("userFullName") || "Student";
+    const userId = localStorage.getItem("userId");
+    document.getElementById("welcomeText").innerText = "Welcome back, " + userName + "!";
+
+    async function loadDashboardData() {
+        try {
+            const res = await fetch(BASE_URL + "/api/elections");
+            const allElections = await res.json();
+            
+            const activeElections = allElections.filter(e => e.status === "Active");
+            document.getElementById('activeElectionsCount').innerText = activeElections.length;
+            document.getElementById('resultsCount').innerText = allElections.filter(e => e.status !== "Active").length;
+
+            const tbody = document.getElementById("electionListBody");
+            tbody.innerHTML = "";
+
+            if (activeElections.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; padding: 40px; color: var(--text-sub);'>No active elections at the moment. Check back later!</td></tr>";
+                document.getElementById('voteBanner').style.display = 'none';
+                document.getElementById('votingStatusText').innerText = "N/A";
+            } else {
+                let hasVotedInAny = false;
+                
+                for (const e of activeElections) {
+                    const checkRes = await fetch(`${BASE_URL}/api/votes/check/${e.id}/${userId}`);
+                    const voted = await checkRes.json();
+                    
+                    if (voted) hasVotedInAny = true;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 600;">${e.name}</td>
+                            <td><span style="font-size:12px; color: var(--text-sub);">${e.startDate} - ${e.endDate}</span></td>
+                            <td><span class="badge ${voted ? 'badge-disabled' : 'badge-active'}">${voted ? 'Voted' : 'Active'}</span></td>
+                            <td>
+                                ${voted 
+                                    ? `<span style="color: var(--text-sub); font-size: 11px;">Already Voted</span>` 
+                                    : `<a href="vote.html" class="btn btn-dark" style="padding: 6px 12px; font-size: 11px;">Cast Vote</a>`
+                                }
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                document.getElementById('votingStatusText').innerText = hasVotedInAny ? "Voted" : "Pending";
+                document.getElementById('voteBanner').style.display = hasVotedInAny ? 'none' : 'flex';
+            }
+        } catch (e) {
+            console.error("Dashboard data load failure", e);
+        }
+    }
+
+    window.onload = loadDashboardData;
+</script>
+
+</body>
+</html>
