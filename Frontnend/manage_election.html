@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,122 +9,138 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="config.js"></script>
 </head>
+
 <body>
 
-<div class="layout-container">
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-icon"><i class="fa-solid fa-check-to-slot"></i></div>
-            <div class="brand-text">
-                <h2>Voting Portal</h2>
-                <p>Admin Portal</p>
-            </div>
-        </div>
-        
-        <nav class="nav-links">
-            <a href="admin_dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a>
-            <a href="manage_election.html" class="nav-item active"><i class="fa-solid fa-calendar-check"></i> Manage Elections</a>
-            <a href="view_voters.html" class="nav-item"><i class="fa-solid fa-users"></i> View Voters</a>
-            <a href="result.html" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Live Results</a>
-        </nav>
-
-        <a href="#" onclick="localStorage.clear(); window.location.href='login.html';" class="nav-item logout-btn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
-    </aside>
-
-    <main class="main-content">
-        <header class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
-            <div>
-                <h1>Manage Elections</h1>
-                <p>Create and monitor campus-wide polls</p>
-            </div>
-            <button class="btn btn-dark" onclick="openModal()"><i class="fa-solid fa-plus"></i> Create New Election</button>
-        </header>
-
-        <div id="electionGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 24px;">
-            <!-- Election Cards -->
-        </div>
-        
-        <div id="noElectionMsg" style="display: none; padding: 100px; text-align: center; color: var(--text-sub);">
-            <i class="fa-solid fa-calendar-xmark" style="font-size: 48px; margin-bottom: 16px;"></i>
-            <h3>No Elections Found</h3>
-            <p>Ready to start? Create your first election above.</p>
-        </div>
-    </main>
-</div>
-
-<!-- Modal -->
-<div class="modal-overlay" id="electionModal">
-    <div class="modal-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-            <h2 style="font-size: 20px; font-weight: 700;">Create New Election</h2>
-            <button onclick="closeModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-sub);"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-
-        <form id="electionForm">
-            <div class="form-group">
-                <label>Election Title</label>
-                <input type="text" id="title" class="form-control" placeholder="e.g., Student Union Election 2026" required>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group">
-                    <label>Start Date</label>
-                    <input type="date" id="startDate" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>End Date</label>
-                    <input type="date" id="endDate" class="form-control" required>
+    <div class="layout-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-check-to-slot"></i></div>
+                <div class="brand-text">
+                    <h2>Voting Portal</h2>
+                    <p>Admin Portal</p>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="desc" class="form-control" style="height: 100px; resize: none;" placeholder="Provide details about the election..."></textarea>
+            <nav class="nav-links">
+                <a href="admin_dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a href="manage_election.html" class="nav-item active"><i class="fa-solid fa-calendar-check"></i> Manage
+                    Elections</a>
+                <a href="view_voters.html" class="nav-item"><i class="fa-solid fa-users"></i> View Voters</a>
+                <a href="result.html" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Live Results</a>
+            </nav>
+
+            <a href="#" onclick="localStorage.clear(); window.location.href='login.html';"
+                class="nav-item logout-btn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+        </aside>
+
+        <main class="main-content">
+            <header class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h1>Manage Elections</h1>
+                    <p>Create and monitor campus-wide polls</p>
+                </div>
+                <button class="btn btn-dark" onclick="openModal()"><i class="fa-solid fa-plus"></i> Create New
+                    Election</button>
+            </header>
+
+            <div id="electionGrid"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 24px;">
+                <!-- Election Cards -->
             </div>
 
-            <div style="display: flex; gap: 12px; margin-top: 32px;">
-                <button type="submit" class="btn btn-primary" style="flex: 1;">Publish Election</button>
-                <button type="button" class="btn btn-white" style="flex: 1; border: 1px solid var(--border);" onclick="closeModal()">Cancel</button>
+            <div id="noElectionMsg" style="display: none; padding: 100px; text-align: center; color: var(--text-sub);">
+                <i class="fa-solid fa-calendar-xmark" style="font-size: 48px; margin-bottom: 16px;"></i>
+                <h3>No Elections Found</h3>
+                <p>Ready to start? Create your first election above.</p>
             </div>
-        </form>
+        </main>
     </div>
-</div>
 
-<script>
-    checkAuth('admin');
+    <!-- Modal -->
+    <div class="modal-overlay" id="electionModal">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="font-size: 20px; font-weight: 700;">Create New Election</h2>
+                <button onclick="closeModal()"
+                    style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-sub);"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
 
-    function openModal() {
-        document.getElementById('electionModal').style.display = 'flex';
-    }
+            <form id="electionForm">
+                <div class="form-group">
+                    <label>Election Title</label>
+                    <input type="text" id="title" class="form-control" placeholder="e.g., Student Union Election 2026"
+                        required>
+                </div>
 
-    function closeModal() {
-        document.getElementById('electionModal').style.display = 'none';
-        document.getElementById('electionForm').reset();
-    }
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="startDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="endDate" class="form-control" required>
+                    </div>
+                </div>
 
-    async function loadElections() {
-        try {
-            const res = await fetch(BASE_URL + "/api/elections");
-            const data = await res.json();
-            const grid = document.getElementById('electionGrid');
-            grid.innerHTML = "";
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="desc" class="form-control" style="height: 100px; resize: none;"
+                        placeholder="Provide details about the election..."></textarea>
+                </div>
 
-            if (data.length === 0) {
-                document.getElementById('noElectionMsg').style.display = 'block';
-                return;
-            }
+                <div style="display: flex; gap: 12px; margin-top: 32px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Publish Election</button>
+                    <button type="button" class="btn btn-white" style="flex: 1; border: 1px solid var(--border);"
+                        onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            document.getElementById('noElectionMsg').style.display = 'none';
+    <script>
+        checkAuth('admin');
 
-            data.forEach(e => {
-                const card = document.createElement('div');
-                card.className = "card";
-                card.style.display = "flex";
-                card.style.flexDirection = "column";
-                
-                const statusClass = e.status === 'Active' ? 'badge-active' : 'badge-pending';
-                
-                card.innerHTML = `
+        function openModal() {
+            const modal = document.getElementById('electionModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('electionModal');
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.getElementById('electionForm').reset();
+            }, 300);
+        }
+
+        async function loadElections() {
+            try {
+                const res = await fetch(BASE_URL + "/api/elections");
+                const data = await res.json();
+                const grid = document.getElementById('electionGrid');
+                grid.innerHTML = "";
+
+                if (data.length === 0) {
+                    document.getElementById('noElectionMsg').style.display = 'block';
+                    return;
+                }
+
+                document.getElementById('noElectionMsg').style.display = 'none';
+
+                data.forEach(e => {
+                    const card = document.createElement('div');
+                    card.className = "card";
+                    card.style.display = "flex";
+                    card.style.flexDirection = "column";
+
+                    const statusClass = e.status === 'Active' ? 'badge-active' : 'badge-pending';
+
+                    card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
                         <h3 style="font-size: 18px; font-weight: 700; max-width: 70%;">${e.name}</h3>
                         <span class="badge ${statusClass}">${e.status}</span>
@@ -150,50 +167,51 @@
                         </button>
                     </div>
                 `;
-                grid.appendChild(card);
-            });
-        } catch (e) { console.error(e); }
-    }
+                    grid.appendChild(card);
+                });
+            } catch (e) { console.error(e); }
+        }
 
-    document.getElementById('electionForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const payload = {
-            name: document.getElementById('title').value.trim(),
-            startDate: document.getElementById('startDate').value,
-            endDate: document.getElementById('endDate').value,
-            description: document.getElementById('desc').value.trim()
-        };
+        document.getElementById('electionForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('title').value.trim(),
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                description: document.getElementById('desc').value.trim()
+            };
 
-        try {
-            const rs = await fetch(BASE_URL + "/api/elections", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-            if (rs.ok) {
-                closeModal();
+            try {
+                const rs = await fetch(BASE_URL + "/api/elections", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                if (rs.ok) {
+                    closeModal();
+                    loadElections();
+                } else { alert("Creation failed."); }
+            } catch (e) { alert("Server error."); }
+        });
+
+        async function toggleStatus(id) {
+            try {
+                await fetch(BASE_URL + "/api/elections/" + id + "/status", { method: "PUT" });
                 loadElections();
-            } else { alert("Creation failed."); }
-        } catch(e) { alert("Server error."); }
-    });
+            } catch (e) { alert("Failed to toggle status."); }
+        }
 
-    async function toggleStatus(id) {
-        try {
-            await fetch(BASE_URL + "/api/elections/" + id + "/status", { method: "PUT" });
-            loadElections();
-        } catch(e) { alert("Failed to toggle status."); }
-    }
+        async function deleteElection(id) {
+            if (!confirm("Are you sure? This will delete all candidates and votes associated with this election.")) return;
+            try {
+                await fetch(BASE_URL + "/api/elections/" + id, { method: "DELETE" });
+                loadElections();
+            } catch (e) { alert("Failed to delete."); }
+        }
 
-    async function deleteElection(id) {
-        if(!confirm("Are you sure? This will delete all candidates and votes associated with this election.")) return;
-        try {
-            await fetch(BASE_URL + "/api/elections/" + id, { method: "DELETE" });
-            loadElections();
-        } catch(e) { alert("Failed to delete."); }
-    }
-
-    window.onload = loadElections;
-</script>
+        window.onload = loadElections;
+    </script>
 
 </body>
+
 </html>

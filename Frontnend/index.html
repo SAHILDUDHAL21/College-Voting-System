@@ -8,9 +8,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="config.js"></script>
 </head>
-<body style="background-color: var(--bg-main); color: var(--text-main);">
+<body class="landing-page">
 
-<header style="background: white; border-bottom: 1px solid var(--border); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
+<header class="landing-header" style="padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
     <div style="display: flex; align-items: center; gap: 12px;">
         <div style="width: 40px; height: 40px; background: var(--primary-blue); color: white; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 20px;">
             <i class="fa-solid fa-check-to-slot"></i>
@@ -21,7 +21,7 @@
         </div>
     </div>
     <div style="display: flex; gap: 16px;">
-        <button class="btn btn-white" style="border: 1px solid var(--border);" onclick="window.location.href='login.html'">Login</button>
+        <button class="btn btn-white" onclick="window.location.href='login.html'">Login</button>
         <button class="btn btn-primary" onclick="window.location.href='register.html'">Register Now</button>
     </div>
 </header>
@@ -29,13 +29,13 @@
 <main style="max-width: 1200px; margin: 0 auto; padding: 60px 20px;">
     
     <section style="text-align: center; max-width: 800px; margin: 0 auto 80px;">
-        <h1 style="font-size: 48px; font-weight: 800; letter-spacing: -1px; line-height: 1.2; margin-bottom: 24px;">Your Voice. Your Choice. <br><span style="color: var(--primary-blue);">Secure Online Elections.</span></h1>
+        <h1 style="font-size: 56px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 24px; color: var(--primary-dark);">Your Voice. Your Choice. <br><span class="landing-title">Secure Online Elections.</span></h1>
         <p style="font-size: 18px; color: var(--text-sub); line-height: 1.6; margin-bottom: 40px;">
             A modern, transparent, and user-friendly platform designed for organizing and participating in campus elections. Cast your vote from anywhere.
         </p>
         <div style="display: flex; justify-content: center; gap: 16px;">
-            <button class="btn btn-primary" style="padding: 16px 32px; font-size: 16px;" onclick="window.location.href='register.html'">Get Started <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></button>
-            <button class="btn btn-white" style="padding: 16px 32px; font-size: 16px; border: 1px solid var(--border);" onclick="window.location.href='login.html'">Login to Portal</button>
+            <button class="btn btn-primary" style="padding: 16px 32px; font-size: 16px;" onclick="window.location.href='register.html'">Get Started <i class="fa-solid fa-arrow-right"></i></button>
+            <button class="btn btn-white" style="padding: 16px 32px; font-size: 16px;" onclick="window.location.href='login.html'">Login to Portal</button>
         </div>
     </section>
 
@@ -67,8 +67,8 @@
     
 </main>
 
-<footer style="background: white; border-top: 1px solid var(--border); padding: 40px 20px; text-align: center;">
-    <p style="color: var(--text-sub); font-size: 14px;">&copy; 2026 College Voting System. All rights reserved.</p>
+<footer class="landing-header" style="padding: 40px 20px; text-align: center; margin-top: 40px;">
+    <p style="color: var(--text-sub); font-size: 14px; font-weight: 500;">&copy; 2026 College Voting System. All rights reserved.</p>
 </footer>
 
 </body>
